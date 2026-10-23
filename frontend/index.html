@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵眸智教 | 计算机领域智能教学平台</title>
+<!-- ==================== 依赖库 ==================== -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<!-- 引入外部样式表 -->
+<link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="h-screen flex overflow-hidden">
+
+<!-- Toast容器 -->
+<div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- ==================== 左侧侧边栏 ==================== -->
+<aside id="sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col z-20 flex-shrink-0 transition-all duration-300">
+<div class="h-14 flex items-center px-5 border-b border-gray-100 flex-shrink-0">
+<div class="w-8 h-8 rounded-lg bg-[#2d8cf0] flex items-center justify-center text-white mr-3 flex-shrink-0 shadow-sm">
+<i class="ph ph-graduation-cap text-xl"></i>
+</div>
+<div class="sidebar-brand-text min-w-0">
+<h1 class="font-bold text-base truncate">灵眸智教</h1>
+<p class="text-[10px] text-gray-400 tracking-wide">CS INTELLIGENT TUTOR</p>
+</div>
+<button id="sidebar-toggle-btn" type="button" class="ml-auto w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#2d8cf0] hover:bg-[#f0f7ff] transition-colors flex-shrink-0" onclick="toggleSidebar()" title="收缩侧边栏" aria-label="收缩侧边栏">
+<i class="ph ph-caret-left text-lg"></i>
+</button>
+</div>
+
+<div class="p-3 border-b border-gray-100 flex-shrink-0">
+<div class="sidebar-course-label">
+<i class="ph ph-books text-lg" aria-hidden="true"></i><span>数据结构与算法</span>
+</div>
+</div>
+
+<nav class="flex-1 overflow-y-auto py-2">
+<div class="sidebar-item active" data-page="ai-chat">
+<i class="ph ph-chats-circle"></i><span>AI 智能助教</span>
+<span class="badge">在线</span>
+</div>
+<div class="px-5 py-2 mt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">教学资源</div>
+<div class="sidebar-item" data-page="video">
+<i class="ph ph-video-camera"></i><span>章节视频</span>
+</div>
+<div class="sidebar-item" data-page="material">
+<i class="ph ph-files"></i><span>课件资料</span>
+</div>
+<div class="sidebar-item" data-page="homework">
+<i class="ph ph-exam"></i><span>在线作业</span>
+</div>
+<div class="sidebar-item teacher-only hidden" data-page="student-info">
+<i class="ph ph-identification-card"></i><span>学生信息</span>
+</div>
+<div class="px-5 py-2 mt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">历史记录</div>
+<div class="px-5 space-y-1" id="history-list">
+<div class="text-xs text-gray-400 py-1.5 px-1" id="history-empty">暂无历史记录</div>
+</div>
+</nav>
+
+<div id="user-profile-footer" class="p-4 border-t border-gray-100 bg-[#fafafa] flex-shrink-0">
+<div class="flex items-center space-x-3">
+<img class="w-9 h-9 rounded-full border border-gray-200 flex-shrink-0" id="user-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Guest&backgroundColor=f0f0f0" alt="用户头像">
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium truncate" id="user-name">游客模式</p>
+<p class="text-[10px] text-gray-500 flex items-center" id="model-status">
+<span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>灵眸智教已就绪
+</p>
+</div>
+<div class="flex space-x-1">
+<i class="ph ph-gear text-gray-400 hover:text-gray-600 cursor-pointer text-lg flex-shrink-0 transition-colors" onclick="openSettings()" title="系统设置"></i>
+<i class="ph ph-sign-out text-gray-400 hover:text-[#e74c3c] cursor-pointer text-lg flex-shrink-0 transition-colors" id="logout-icon" onclick="logout()" title="退出登录" style="display:none;"></i>
+</div>
+</div>
+<div id="guest-login-bar" class="mt-3 pt-3 border-t border-gray-200">
+<button onclick="openAuthModal()" class="w-full py-1.5 bg-[#2d8cf0] text-white text-xs rounded-md font-medium hover:bg-[#2080e0] transition-colors flex items-center justify-center gap-1">
+<i class="ph ph-sign-in"></i> 登录 / 注册以解锁无限提问
+</button>
+</div>
+</div>
+</aside>
+
+<!-- ==================== 右侧主内容区 ==================== -->
+<main class="flex-1 flex flex-col relative min-w-0 min-h-0 bg-[#f5f7fa]">
+<!-- 页面1: AI 聊天工作台 -->
+<div id="page-ai-chat" class="page-content flex flex-col h-full min-h-0">
+<header class="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 flex-shrink-0">
+<div class="flex items-center text-sm text-gray-500 min-w-0">
+<span class="text-gray-900 font-medium truncate">AI 智能助教</span>
+<span class="hidden sm:inline mx-3 text-gray-300">|</span>
+<span class="hidden sm:flex items-center text-xs bg-[#f0f7ff] text-[#2d8cf0] px-2.5 py-0.5 rounded-full" id="rag-status-badge">
+<i class="ph ph-database mr-1"></i>RAG知识库已挂载
+</span>
+</div>
+<button id="theme-toggle-btn" class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#2d8cf0] hover:bg-[#f0f7ff] transition-colors" title="切换暗色模式" aria-label="切换暗色模式">
+<i class="ph ph-moon text-lg"></i>
+</button>
+</header>
+
+<div id="chat-stream" class="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 space-y-5 pb-60 scroll-smooth">
+<div class="max-w-3xl mx-auto msg-enter">
+<div class="bg-white border border-gray-200 rounded-xl p-5 md:p-6 shadow-sm">
+<div class="flex items-start">
+<div class="w-10 h-10 rounded-full bg-[#ebf4ff] flex items-center justify-center text-[#2d8cf0] mr-4 flex-shrink-0"><i class="ph ph-robot text-xl"></i></div>
+<div class="min-w-0 flex-1">
+<h3 class="font-bold text-gray-900 mb-2 text-base">您好，我是灵眸智教 AI 助教 👋</h3>
+<p class="text-gray-600 text-sm mb-4 leading-relaxed">基于<strong>千问2.5-7B大模型</strong>构建，结合<strong>RAG学科知识库</strong>与<strong>工作流编排</strong>技术，支持代码评测、知识精准问答与学情智能诊断。</p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group">
+<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-code-block mr-1"></i>代码自动评测</div>
+<div class="text-gray-500 leading-relaxed">分析复杂度、风格检查与优化建议</div>
+</button>
+<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group">
+<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-translate mr-1"></i>核心概念精讲</div>
+<div class="text-gray-500 leading-relaxed">RAG知识库精准检索与答疑</div>
+</button>
+<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group">
+<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-chart-bar mr-1"></i>学情智能诊断</div>
+<div class="text-gray-500 leading-relaxed">多维度学情分析与预警</div>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="chat-composer" class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#f5f7fa] via-[#f5f7fa] to-transparent pt-8 pb-4 md:pb-6 px-4 md:px-6">
+<div class="max-w-3xl mx-auto">
+<div id="chat-input-panel" class="bg-white border border-gray-200 rounded-xl shadow-sm p-1 focus-within:border-[#2d8cf0] focus-within:shadow-[0_0_0_3px_rgba(45,140,240,0.08)] transition-all">
+<textarea id="user-input" rows="1" maxlength="2000" class="w-full bg-transparent border-none focus:ring-0 resize-none px-4 py-3 text-sm outline-none" placeholder="输入问题或粘贴代码... (Enter发送 / Shift+Enter换行)" style="max-height:150px; min-height:44px;"></textarea>
+<div class="flex justify-between items-center px-3 py-2 border-t border-gray-100">
+<div class="flex space-x-1 text-gray-400">
+<button type="button" id="attachment-btn" class="p-1.5 hover:text-[#2d8cf0] hover:bg-[#ebf4ff] rounded-md transition-colors" title="上传附件"><i class="ph ph-paperclip text-lg"></i></button>
+<input id="attachment-input" type="file" accept=".txt,.pdf,.doc,.docx" class="hidden">
+<button id="voice-input-btn" class="p-1.5 hover:text-[#2d8cf0] hover:bg-[#ebf4ff] rounded-md transition-colors" title="开始语音输入"><i class="ph ph-microphone text-lg"></i></button>
+</div>
+<div class="flex items-center gap-2 min-w-0">
+<div id="attachment-preview" class="hidden max-w-[200px] px-2 py-1 bg-[#f0f7ff] text-xs text-[#2d8cf0] rounded-md items-center gap-1"></div>
+<span class="text-[10px] text-gray-400 hidden sm:inline" id="char-count">0/2000</span>
+<button id="stop-btn" class="hidden bg-red-50 text-red-500 border border-red-200 px-4 py-1.5 rounded-md text-sm font-medium transition-all hover:bg-red-100 items-center gap-1" onclick="stopGeneration()">
+<i class="ph ph-stop-circle"></i> 停止
+</button>
+<button id="send-btn" disabled class="bg-[#2d8cf0] hover:bg-[#2080e0] text-white px-5 py-1.5 rounded-lg text-sm font-medium transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm">
+发送 <i class="ph ph-paper-plane-right"></i>
+</button>
+</div>
+</div>
+</div>
+<div class="text-center mt-2 text-[10px] text-gray-400 flex items-center justify-center gap-2">
+<span>AI 生成内容仅供教学参考</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 页面2: 章节视频 -->
+<div id="page-video" class="page-content hidden h-full p-6 md:p-8 overflow-y-auto">
+<div class="max-w-5xl mx-auto w-full">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2d8cf0] to-[#5fa8f5] flex items-center justify-center text-white shadow-md">
+<i class="ph ph-video-camera text-xl"></i>
+</div>
+<div>
+<h2 class="text-xl font-bold text-gray-900">章节视频</h2>
+<p class="text-xs text-gray-400 mt-0.5">共 <span id="video-count">0</span> 个视频</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="teacher-only hidden group relative bg-white border border-gray-200 hover:border-amber-400 hover:bg-amber-50 text-gray-500 hover:text-amber-600 px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-sm flex items-center gap-2" onclick="createVideoFolder()" title="新建文件夹">
+<i class="ph ph-folder-plus text-lg"></i>
+<span>新建文件夹</span>
+</button>
+<button class="teacher-only hidden group relative bg-white border-2 border-dashed border-gray-300 hover:border-[#2d8cf0] hover:bg-[#f0f7ff] text-gray-500 hover:text-[#2d8cf0] px-5 py-2 rounded-xl text-sm font-medium transition-all shadow-sm flex items-center gap-2" onclick="document.getElementById('video-upload-input').click()">
+<i class="ph ph-upload-simple text-lg group-hover:animate-bounce"></i>
+<span>上传视频</span>
+</button>
+<input type="file" id="video-upload-input" accept="video/*" class="hidden" onchange="handleVideoUpload(this)">
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="video-grid"></div>
+</div>
+</div>
+
+<!-- 页面3: 课件资料 -->
+<div id="page-material" class="page-content hidden h-full p-6 md:p-8 overflow-y-auto">
+<div class="max-w-5xl mx-auto w-full">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8b5cf6] to-[#a78bfa] flex items-center justify-center text-white shadow-md">
+<i class="ph ph-files text-xl"></i>
+</div>
+<div>
+<h2 class="text-xl font-bold text-gray-900">课件资料</h2>
+<p class="text-xs text-gray-400 mt-0.5">共 <span id="material-count">0</span> 份资料</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="teacher-only hidden group relative bg-white border border-gray-200 hover:border-amber-400 hover:bg-amber-50 text-gray-500 hover:text-amber-600 px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-sm flex items-center gap-2" onclick="createMaterialFolder()" title="新建文件夹">
+<i class="ph ph-folder-plus text-lg"></i>
+<span>新建文件夹</span>
+</button>
+<button class="teacher-only hidden group relative bg-white border-2 border-dashed border-gray-300 hover:border-[#8b5cf6] hover:bg-[#f5f0ff] text-gray-500 hover:text-[#8b5cf6] px-5 py-2 rounded-xl text-sm font-medium transition-all shadow-sm flex items-center gap-2" onclick="document.getElementById('material-upload-input').click()">
+<i class="ph ph-upload-simple text-lg group-hover:animate-bounce"></i>
+<span>上传课件</span>
+</button>
+<input type="file" id="material-upload-input" class="hidden" multiple onchange="handleMaterialUpload(this)">
+</div>
+</div>
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm divide-y divide-gray-100" id="material-list"></div>
+</div>
+</div>
+
+<!-- 页面4: 在线作业 -->
+<div id="page-homework" class="page-content hidden h-full p-6 md:p-8 overflow-y-auto">
+<div class="max-w-4xl mx-auto">
+<div class="flex justify-between items-center gap-8 mb-6">
+<h2 class="text-xl font-bold flex items-center gap-2 min-w-0"><i class="ph ph-exam text-[#2d8cf0] flex-shrink-0"></i> <span id="homework-title-text" class="truncate">在线作业</span></h2>
+<button class="teacher-only hidden flex-shrink-0 bg-[#10b981] hover:bg-[#059669] text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-all shadow-sm" onclick="openHomeworkForm()">
+<i class="ph ph-plus"></i> 发布作业
+</button>
+</div>
+<div class="space-y-4" id="homework-list"></div>
+</div>
+</div>
+
+<!-- 页面5: 学生信息 -->
+<div id="page-student-info" class="page-content hidden h-full p-6 md:p-8 overflow-y-auto">
+<div class="max-w-2xl mx-auto w-full">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-xl bg-[#10b981] flex items-center justify-center text-white shadow-md"><i class="ph ph-identification-card text-xl"></i></div>
+<div><h2 class="text-xl font-bold text-gray-900">学生信息</h2><p class="text-xs text-gray-400 mt-0.5">按学号查询并修改学生资料</p></div>
+</div>
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+<form id="student-search-form" class="flex gap-3" onsubmit="event.preventDefault(); searchStudent()">
+<input id="student-search-number" class="auth-input" type="text" required placeholder="请输入学号">
+<button type="submit" class="flex-shrink-0 px-5 py-2 bg-[#2d8cf0] hover:bg-[#2080e0] text-white rounded-lg text-sm font-medium"><i class="ph ph-magnifying-glass mr-1"></i>查询</button>
+</form>
+<form id="student-info-form" class="hidden mt-6 space-y-4" onsubmit="event.preventDefault(); updateStudentInfo()">
+<div><label class="block text-xs font-medium text-gray-500 mb-1">学号</label><input id="student-info-number" class="auth-input bg-gray-50" type="text" readonly></div>
+<div><label class="block text-xs font-medium text-gray-500 mb-1">姓名</label><input id="student-info-name" class="auth-input" type="text" required placeholder="请输入学生姓名"></div>
+<div><label class="block text-xs font-medium text-gray-500 mb-1">邮箱</label><input id="student-info-email" class="auth-input" type="email" required placeholder="请输入学生邮箱"></div>
+<div><label class="block text-xs font-medium text-gray-500 mb-1">新密码</label><input id="student-info-password" class="auth-input" type="password" minlength="6" placeholder="不修改请留空，至少6位"></div>
+<div class="flex justify-end"><button type="submit" class="px-5 py-2 bg-[#10b981] hover:bg-[#059669] text-white rounded-lg text-sm font-medium"><i class="ph ph-check mr-1"></i>保存修改</button></div>
+</form>
+</div>
+</div>
+</div>
+</main>
+
+<div id="homework-modal" class="modal-overlay" onclick="if(event.target===this)closeHomeworkForm()">
+<div class="modal-content bg-white rounded-xl w-[460px] max-w-[90vw] p-7 shadow-xl">
+<div class="flex justify-between items-center mb-5">
+<h3 class="font-bold text-lg flex items-center gap-2"><i class="ph ph-notebook text-[#10b981]"></i> 发布作业</h3>
+<button class="text-gray-400 hover:text-gray-600 text-xl" onclick="closeHomeworkForm()" title="关闭"><i class="ph ph-x"></i></button>
+</div>
+<form id="homework-form" class="space-y-5" onsubmit="event.preventDefault(); submitHomework()">
+<div><label class="block text-xs font-medium text-gray-500 mb-1">作业标题</label><input id="homework-form-title" class="auth-input" type="text" placeholder="例如：实验一 线性表实现"></div>
+<div><label class="block text-xs font-medium text-gray-500 mb-1">截止时间</label><input id="homework-form-deadline" class="auth-input" type="datetime-local"></div>
+<div><label class="block text-xs font-medium text-gray-500 mb-1">作业要求</label><textarea id="homework-form-description" class="auth-input min-h-24 resize-y" placeholder="请输入作业说明和提交要求"></textarea></div>
+<div class="flex justify-end gap-4 pt-3"><button type="button" class="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50" onclick="closeHomeworkForm()">取消</button><button type="submit" class="px-5 py-2 bg-[#10b981] hover:bg-[#059669] text-white rounded-lg text-sm font-medium"><i class="ph ph-paper-plane-right"></i> 发布</button></div>
+</form>
+</div>
+</div>
+
+<div id="submission-modal" class="modal-overlay" onclick="if(event.target===this)closeSubmissionModal()">
+<div class="modal-content bg-white rounded-xl w-[520px] max-w-[92vw] p-7 shadow-xl">
+<div class="flex justify-between items-center mb-5"><h3 class="font-bold text-lg">提交作业</h3><button class="text-gray-400 hover:text-gray-600 text-xl" onclick="closeSubmissionModal()" title="关闭"><i class="ph ph-x"></i></button></div>
+<p class="text-sm text-gray-600 mb-4">作业：<span id="submission-homework-title" class="font-medium text-gray-800"></span></p>
+<input id="submission-homework-id" type="hidden">
+<textarea id="submission-content" class="auth-input min-h-40 resize-y" placeholder="请输入你的作业内容"></textarea>
+<div class="flex justify-end gap-4 mt-5"><button class="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50" onclick="closeSubmissionModal()">取消</button><button class="px-5 py-2 bg-[#2d8cf0] hover:bg-[#2080e0] text-white rounded-lg text-sm font-medium" onclick="submitStudentHomework()">提交作业</button></div>
+</div>
+</div>
+
+<div id="grade-modal" class="modal-overlay" onclick="if(event.target===this)closeGradeModal()">
+<div class="modal-content bg-white rounded-xl w-[680px] max-w-[94vw] max-h-[85vh] overflow-y-auto p-7 shadow-xl">
+<div class="flex justify-between items-center mb-5"><h3 class="font-bold text-lg">批改作业：<span id="grade-homework-title"></span></h3><button class="text-gray-400 hover:text-gray-600 text-xl" onclick="closeGradeModal()" title="关闭"><i class="ph ph-x"></i></button></div>
+<div id="grade-submissions" class="space-y-4"></div>
+</div>
+</div>
+
+<div id="confirm-modal" class="modal-overlay" onclick="if(event.target===this)closeConfirmModal()">
+<div class="modal-content bg-white rounded-xl w-[380px] max-w-[90vw] p-6 shadow-xl">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-full bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0"><i class="ph ph-warning text-lg"></i></div>
+<div class="min-w-0"><h3 class="font-bold text-lg text-gray-900">确认删除</h3><p id="confirm-message" class="text-sm text-gray-600 mt-2 leading-relaxed"></p></div>
+</div>
+<div class="flex justify-end gap-3 mt-6"><button type="button" class="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50" onclick="closeConfirmModal()">取消</button><button type="button" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium" onclick="confirmPendingAction()">删除</button></div>
+</div>
+</div>
+
+<!-- ==================== 登录/注册模态框 ==================== -->
+<div id="auth-modal" class="modal-overlay">
+<div class="modal-content bg-white rounded-xl w-[400px] max-w-[90vw] p-6 shadow-xl">
+<div class="flex gap-6 border-b border-gray-100 mb-5 pb-2">
+<button id="tab-student" class="text-[#2d8cf0] font-bold border-b-2 border-[#2d8cf0] pb-1 transition-all" onclick="switchAuthRole('student')">👨‍🎓 学生端</button>
+<button id="tab-teacher" class="text-gray-400 font-medium pb-1 transition-all hover:text-gray-600" onclick="switchAuthRole('teacher')">👨‍🏫 教师端</button>
+</div>
+
+<div id="auth-login-form">
+<div class="flex justify-between items-center mb-5">
+<h3 class="font-bold text-lg flex items-center gap-2" id="login-title"><i class="ph ph-sign-in text-[#2d8cf0]"></i> 学生登录</h3>
+<i class="ph ph-x cursor-pointer text-gray-400 hover:text-gray-600 text-lg transition-colors" onclick="closeAuthModal()"></i>
+</div>
+<div class="space-y-4">
+<div>
+<label id="login-identifier-label" class="block text-xs font-medium text-gray-500 mb-1">学号</label>
+<input type="text" id="login-username" class="auth-input" placeholder="请输入学号">
+</div>
+<div>
+<label class="block text-xs font-medium text-gray-500 mb-1">密码</label>
+<input type="password" id="login-password" class="auth-input" placeholder="请输入密码">
+</div>
+<button class="auth-btn" onclick="handleLogin()">登 录</button>
+<div class="text-center text-xs text-gray-500 mt-3">
+还没有账号？<span class="auth-link" onclick="switchAuthForm('register')">立即注册</span>
+</div>
+</div>
+</div>
+
+<div id="auth-register-form" class="hidden">
+<div class="flex justify-between items-center mb-5">
+<h3 class="font-bold text-lg flex items-center gap-2" id="reg-title"><i class="ph ph-user-plus text-[#2d8cf0]"></i> 注册学生账号</h3>
+<i class="ph ph-x cursor-pointer text-gray-400 hover:text-gray-600 text-lg transition-colors" onclick="closeAuthModal()"></i>
+</div>
+<div class="space-y-4">
+<div id="reg-student-number-field">
+<label class="block text-xs font-medium text-gray-500 mb-1">学号</label>
+<input type="text" id="reg-student-number" class="auth-input" placeholder="请输入学号">
+</div>
+<div id="reg-employee-number-field" class="hidden">
+<label class="block text-xs font-medium text-gray-500 mb-1">教职工号</label>
+<input type="text" id="reg-employee-number" class="auth-input" placeholder="请输入教职工号">
+</div>
+<div>
+<label class="block text-xs font-medium text-gray-500 mb-1">姓名</label>
+<input type="text" id="reg-username" class="auth-input" placeholder="请输入姓名">
+</div>
+<div>
+<label class="block text-xs font-medium text-gray-500 mb-1">邮箱</label>
+<input type="email" id="reg-email" class="auth-input" placeholder="请输入常用邮箱">
+</div>
+<div>
+<label class="block text-xs font-medium text-gray-500 mb-1">密码</label>
+<input type="password" id="reg-password" class="auth-input" placeholder="请设置密码（至少6位）">
+</div>
+<input type="hidden" id="reg-role" value="student">
+<button class="auth-btn" onclick="handleRegister()">注 册</button>
+<div class="text-center text-xs text-gray-500 mt-3">
+已有账号？<span class="auth-link" onclick="switchAuthForm('login')">返回登录</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ==================== 设置模态框 ==================== -->
+<div id="settings-modal" class="modal-overlay" onclick="if(event.target===this)closeSettings()">
+<div class="modal-content bg-white rounded-xl w-[420px] max-w-[90vw] p-6 shadow-xl">
+<div class="flex justify-between items-center mb-5">
+<h3 class="font-bold text-lg flex items-center gap-2"><i class="ph ph-gear text-[#2d8cf0]"></i> 系统设置</h3>
+<i class="ph ph-x cursor-pointer text-gray-400 hover:text-gray-600 text-lg transition-colors" onclick="closeSettings()"></i>
+</div>
+<div class="space-y-4 text-sm">
+<div class="border-b border-gray-100 pb-4 space-y-3">
+<div class="text-xs font-semibold text-gray-700">账号信息</div>
+<input id="settings-username" class="auth-input" type="text" placeholder="账号名称">
+<input id="settings-email" class="auth-input" type="email" placeholder="邮箱地址">
+<div class="text-xs font-semibold text-gray-700 pt-2">修改密码</div>
+<input id="settings-current-password" class="auth-input" type="password" placeholder="原密码（修改密码时必填）">
+<input id="settings-new-password" class="auth-input" type="password" placeholder="新密码（至少6位）">
+<button onclick="updateProfile()" class="w-full py-2 bg-[#2d8cf0] text-white rounded-lg text-sm font-medium hover:bg-[#2080e0] transition-colors">保存账号信息</button>
+</div>
+<div class="flex justify-between items-center py-2.5 border-b border-gray-100">
+<span class="text-gray-500">模型版本</span><span class="font-medium">千问 2.5-7B</span>
+</div>
+<div class="flex justify-between items-center py-2.5 border-b border-gray-100">
+<span class="text-gray-500">API 端点</span><span class="font-medium text-xs font-mono text-gray-600" id="api-endpoint-display">/api/v1</span>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-gray-100">
+<button onclick="testAPIConnection()" class="w-full py-2 border border-[#2d8cf0] text-[#2d8cf0] rounded-lg text-sm font-medium hover:bg-[#f0f7ff] transition-colors flex items-center justify-center gap-2">
+<i class="ph ph-plugs"></i> 测试API连接
+</button>
+</div>
+</div>
+</div>
+
+<!-- 引入外部逻辑脚本 -->
+<script src="./js/main.js"></script>
+</body>
+</html>

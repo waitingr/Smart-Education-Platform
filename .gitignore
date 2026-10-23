@@ -1,0 +1,68 @@
+# ========== 模型权重（十几 GB，绝不上传）==========
+models/llm/*/snapshots/
+models/llm/*/.cache/
+models/**/*.safetensors
+models/**/*.bin
+models/**/*.pt
+models/**/*.pth
+models/**/*.gguf
+models/**/*.onnx
+models/**/*.h5
+models/**/*.ckpt
+
+# 只保留模型目录结构
+!models/**/.gitkeep
+
+# ========== 密钥与本地配置 ==========
+.env
+*.env
+!.env.example
+backend/.env
+
+# ========== Python 缓存 ==========
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+venv/
+.venv/
+env/
+ENV/
+.conda/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ========== 运行时数据（用户上传/自动生成）==========
+data/video/
+data/attachments/
+data/vector_db/
+*.log
+*.sqlite
+*.db
+*.pkl
+*.npy
+
+# ========== 编辑器 / 系统 ==========
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========== 不公开的商业计划书 ==========
+data/materials/第四版.docx
+
+# ========== 其他 ==========
+*.zip
+*.rar
+*.7z
+!data/materials/**/*.zip
