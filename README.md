@@ -1,4 +1,4 @@
-# Qwen RAG System - 重新运行指南
+# Qwen RAG System - 运行指南
 
 ## 项目概述
 这是一个基于Qwen 2.5大模型的智能教学平台，包含RAG（检索增强生成）功能和Web前端界面。
