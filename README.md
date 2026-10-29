@@ -20,7 +20,7 @@
 | GPU / 大模型 | 无需 | 未接入大模型时自动进入**离线检索模式**，全部功能仍可用 |
 | 视觉模型（随项目附带） | 8 GB 显存 | 生成 + 看图共用同一个模型 `qwen3-vl:8b`（5.38 GB），运行时与权重都在 `models/ollama/`；RTX 4060 8GB 实测约 27 秒/张 |
 | 内存 | 4 GB | 离线模式约 300 MB |
-| 磁盘 | 约 13 GB | 代码 11 MB + Ollama 运行时 2.1 GB + 模型 10.8 GB（删掉 `store/gguf` 可省 5.4 GB） |
+| 磁盘 | 约 7 GB | 代码/数据 13 MB + Ollama 运行时 1.2 GB + 模型权重 5.4 GB |
 
 ### 1.2 安装与启动（Windows PowerShell）
 
@@ -186,14 +186,13 @@ SmartEduPlatform/
 │   └── smart_edu.db             # SQLite 演示库（MySQL 可用时不使用）
 ├── scripts/                     # 见 scripts/README.md（seed / smoke / check / 环境 / 性能）
 ├── training/                    # LoRA 微调（build_dataset.py / train_lora.py；权重需自行下载）
-├── models/                      # 见 models/README.md —— 本地推理运行时与模型（约 12.9 GB，不进版本库）
+├── models/                      # 见 models/README.md —— 本地推理运行时与模型（约 6.6 GB，不进版本库）
 │   ├── ollama/
 │   │   ├── runtime/             # Ollama 0.40.12 本体 + lib\ollama（CUDA/Vulkan 后端，2.1 GB）
-│   │   ├── store/               # OLLAMA_MODELS：qwen3-vl:8b 权重 + 清单 + 元数据（10.8 GB）
+│   │   ├── store/               # OLLAMA_MODELS：qwen3-vl:8b 权重 + 清单 + 元数据（5.4 GB）
 │   │   ├── ollama.cmd           # 带环境变量的便捷入口（list / ps / serve / pull）
 │   │   └── README.md            # 启动方式与故障排查
 │   └── llm/                     # （空）微调基座权重放这里，默认不下载
-├── legacy/                      # 见 legacy/README.md —— 已被取代的旧模块，不参与运行
 ├── docs/                        # 参赛文档 01–06 + 需求对照表 + 图片 + 赛题原件
 │   ├── 赛题/                    # 赛题 PDF 原件
 │   └── handoff/                 # 与 AI 协作的交接记录（含完整对话）
@@ -345,7 +344,7 @@ $env:KB_DOC_DIR = "data/kb_medicine"     # 放入该学科的结构化文档
 
 ## 9. 已知边界
 
-- 仓库（Git）里只有源码：模型与推理运行时体积 12.9 GB，放在 `models/ollama/`（已在 `.gitignore` 中忽略），
+- 仓库（Git）里只有源码：模型与推理运行时体积 6.6 GB，放在 `models/ollama/`（已在 `.gitignore` 中忽略），
   随项目文件夹**整体拷贝**分发；不需要另装 Ollama，也不需要联网拉模型。
   未启动模型时回答为"知识库原文结构化摘录"，可核查但不如大模型连贯，界面已明确标识。
 - 哈希向量后端只做近似语义匹配，检索主力是 BM25 + 覆盖率 + 短语命中；安装 `sentence-transformers` 后可自动升级为语义向量后端。

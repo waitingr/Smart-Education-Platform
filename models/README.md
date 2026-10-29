@@ -1,7 +1,7 @@
 # models/ —— 本地推理运行时与模型（项目自带，不依赖 E:\Tools）
 
 本目录**已包含运行所需的全部内容**，把整个项目文件夹拷到另一台机器即可直接跑（不需要另装 Ollama）。
-它是 Git 忽略的：体积约 12.9 GB，不进版本库。
+它是 Git 忽略的：体积约 6.6 GB，不进版本库。
 
 ```text
 models/
@@ -10,11 +10,10 @@ models/
 │   ├── runtime/               # Ollama 可执行部分（2.1 GB）
 │   │   ├── ollama.exe         # 推理服务本体
 │   │   └── lib/ollama/        # llamacpp 后端 + CUDA/vulkan 运行库
-│   ├── store/                 # 模型库 OLLAMA_MODELS（10.8 GB）
+│   ├── store/                 # 模型库 OLLAMA_MODELS（5.4 GB）
 │   │   ├── blobs/             # 权重分片（qwen3-vl:8b 的 4.68 GB 模型 + 0.70 GB 视觉投影层）
 │   │   ├── manifests-v2/      # 模型清单
-│   │   ├── metadata/          # 张量元数据
-│   │   └── gguf/              # 导入源文件（可选，删掉可省 5.38 GB，模型仍能跑）
+│   │   └── metadata/          # 张量元数据
 │   ├── ollama.cmd             # 便捷入口：带上环境变量再转发参数，如 ollama.cmd list
 │   └── README.md              # 这一层的启动方式与故障排查
 ├── llm/                       # （空）微调基座权重放这里，默认不下载
@@ -55,7 +54,6 @@ models\ollama\ollama.cmd list        # 另开一个窗口
 | 查看模型是否驻留显存 | `models\ollama\ollama.cmd ps` |
 | 再拉一个模型 | `models\ollama\ollama.cmd pull qwen3-vl:4b`（低显存备选） |
 | 删模型 | `models\ollama\ollama.cmd rm qwen3-vl:4b` |
-| 腾 5.38 GB | 删除 `models/ollama/store/gguf/`（只是导入源，模型本体在 blobs 里） |
 | 整体重装 | 删掉 `models/ollama` 后重新解压 Ollama 并 `pull qwen3-vl:8b` |
 
 ## 为什么把模型放进项目
@@ -64,7 +62,7 @@ models\ollama\ollama.cmd list        # 另开一个窗口
 | --- | --- |
 | 可搬运 | 比赛现场/评审机器通常不允许联网，"拷文件夹就能跑"比"先装 Ollama 再 pull 模型"可靠得多 |
 | 可复现 | 版本（0.40.12）、参数（`num_ctx=8192`）、权重（Q4_K_M + Q8 mmproj）全部固定，不受机器上别处的环境影响 |
-| 可解释 | 体积去向一目了然：代码 11 MB + 运行时 2.1 GB + 权重 10.8 GB |
+| 可解释 | 体积去向一目了然：代码 13 MB + 运行时 1.2 GB + 权重 5.4 GB |
 | 不污染系统 | 不再往 `E:\Tools`、`%USERPROFILE%\.ollama` 里散落文件，卸载=删文件夹 |
 
 ## 注意事项

@@ -342,3 +342,53 @@ models/
 | 同上，但后端 stdout 直连管道且每请求写访问日志 | 10–15 ms（**测量假象**：日志写入阻塞在管道上，不是检索慢） |
 
 > 演示/压测时把后端日志重定向到文件（`data/logs/server.out`）再测，否则访问日志会污染延迟数字。
+
+---
+
+## 13. 瘦身：删掉一切用不到的东西（12.87 GB → 6.61 GB）
+
+### 13.1 删了什么
+
+| 对象 | 体积 | 为什么可以删 |
+| --- | --- | --- |
+| `models/ollama/store/gguf/` | 5.38 GB | 当初 `ollama create` 的导入源（8B 权重 + mmproj 各一份）；模型本体已在 `blobs/`，删后 `ollama list` 与推理均正常 |
+| `models/ollama/runtime/lib/ollama/cuda_v13/` | 902 MB | 本机驱动 12.7 走 `cuda_v12`；启动日志确认 `libdirs=ollama,cuda_v12` |
+| `legacy/` | 24 KB | 5 个已被取代的旧模块（`rag_qa.py`、`create_tables.py` 等），无任何 import 引用 |
+| `data/attachments/*`（4 个测试残留） | 58 KB | `smoke_test.py` 每次自检都会重新生成 |
+| `data/tmp_server.*`、`models/ollama/serve.log`、旧日志 | — | 调试产物；日志统一改到 `data/logs/`（gitignore） |
+
+保留未删的三项及理由：
+
+| 保留 | 体积 | 理由 |
+| --- | --- | --- |
+| `runtime/lib/ollama/vulkan/` | 40 MB | 换到 AMD/Intel 或驱动不兼容的机器时是唯一 GPU 兜底 |
+| `training/` | 105 KB | 文档 04 第 3.5 节声明了 LoRA 微调能力，源码需在场 |
+| `data/eval/reports/` | 55 KB | 数据库里有指向这些报告的记录，也是《06—效果验证报告》的原始证据 |
+
+### 13.2 结构再标准化
+
+- `docs/build_pptx.py` → `scripts/build_pptx.py`（输出路径改为 `docs/`，脚本不再散落在文档目录里）
+- 清空 `data/attachments` 的测试残留，保留 `.gitkeep` 占位
+- 顶层目录收敛为：`backend / data / docs / frontend / models / scripts / training` + 4 个文件
+
+### 13.3 删后验收
+
+| 检查 | 结果 |
+| --- | --- |
+| `ollama list` | `qwen3-vl:8b` 仍在（5.8 GB 清单解析到 blobs） |
+| 模型生成 | 「栈是后进先出（LIFO）…队列是先进先出（FIFO）…」正常 |
+| GPU 后端 | 启动日志 `library=CUDA compute=8.9 libdirs=ollama,cuda_v12` |
+| 显存 | `/api/ps` → `size_vram=5.44 GB`，`context_length=8192` |
+| `smoke_test.py` | **36/36 通过** |
+| `smoke_lms.py --fast` | 21 通过 / 0 失败 / 4 跳过 |
+| `verify_kb_equiv.py` | 30 条查询 top-10 逐位一致 |
+| `run.ps1 -Check` | 模型库 5.4 GB、内核 583 KB，全部 OK |
+
+### 13.4 体积账
+
+| 部分 | 之前 | 现在 |
+| --- | --- | --- |
+| 代码 + 数据（不含 `.venv`） | 13.3 MB | 13.8 MB（含新增文档） |
+| Ollama 运行时 | 2.1 GB | 1.2 GB |
+| 模型权重 | 10.77 GB | 5.38 GB |
+| **合计** | **12.87 GB** | **6.61 GB** |

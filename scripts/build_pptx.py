@@ -1,7 +1,7 @@
-﻿"""生成《灵眸智教—作品方案》汇报 PPT（16:9，可编辑文本/表格/图表）。
+"""生成《灵眸智教—作品方案》汇报 PPT（16:9，可编辑文本/表格/图表）。
 
 用法（使用 DSH 自带 Python，内含 python-pptx）：
-    python docs/build_pptx.py
+    python scripts/build_pptx.py
 输出：
     docs/灵眸智教-作品方案.pptx
 """
@@ -13,7 +13,8 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Emu, Inches, Pt
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '灵眸智教-作品方案.pptx')
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT = os.path.join(ROOT, 'docs', '灵眸智教-作品方案.pptx')
 
 # ---------------- 设计系统 ----------------
 INK = RGBColor(0x0F, 0x17, 0x2A)

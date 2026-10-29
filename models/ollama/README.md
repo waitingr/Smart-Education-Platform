@@ -4,14 +4,13 @@
 
 ```text
 models/ollama/
-├── runtime/                 # 可执行部分（2.1 GB）
+├── runtime/                 # 可执行部分（1.2 GB）
 │   ├── ollama.exe
 │   └── lib/ollama/          # llamacpp 后端 + CUDA v12/v13 + vulkan 运行库
-├── store/                   # 模型库（= OLLAMA_MODELS，10.8 GB）
+├── store/                   # 模型库（= OLLAMA_MODELS，5.4 GB）
 │   ├── blobs/               # 权重分片：qwen3-vl:8b = 4.68 GB 模型 + 0.70 GB mmproj
 │   ├── manifests-v2/
-│   ├── metadata/
-│   └── gguf/                # 导入源（可选）
+│   └── metadata/
 └── ollama.cmd               # 带环境变量的便捷入口
 ```
 
