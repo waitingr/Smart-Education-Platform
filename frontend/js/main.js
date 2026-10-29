@@ -132,31 +132,40 @@ function switchAuthRole(role) {
     const studentNumberField = document.getElementById('reg-student-number-field');
     const employeeNumberField = document.getElementById('reg-employee-number-field');
     const loginIdentifierLabel = document.getElementById('login-identifier-label');
-    
-    if (role === 'student') {
-        tabStudent.className = 'text-[#2d8cf0] font-bold border-b-2 border-[#2d8cf0] pb-1 transition-all';
-        tabTeacher.className = 'text-gray-400 font-medium pb-1 transition-all hover:text-gray-600';
-        document.getElementById('login-title').innerHTML = '<i class="ph ph-sign-in text-[#2d8cf0]"></i> 学生登录';
-        document.getElementById('reg-title').innerHTML = '<i class="ph ph-user-plus text-[#2d8cf0]"></i> 注册学生账号';
-    } else {
-        tabTeacher.className = 'text-[#2d8cf0] font-bold border-b-2 border-[#2d8cf0] pb-1 transition-all';
-        tabStudent.className = 'text-gray-400 font-medium pb-1 transition-all hover:text-gray-600';
-        document.getElementById('login-title').innerHTML = '<i class="ph ph-sign-in text-[#2d8cf0]"></i> 教师登录';
-        document.getElementById('reg-title').innerHTML = '<i class="ph ph-user-plus text-[#2d8cf0]"></i> 注册教师账号';
-    }
-    document.getElementById('reg-username').placeholder = role === 'student' ? '请输入学生姓名' : '请输入教师姓名';
-    if (loginIdentifierLabel) loginIdentifierLabel.textContent = role === 'student' ? '学号' : '教职工号';
-    document.getElementById('login-username').placeholder = role === 'student' ? '请输入学号' : '请输入教职工号';
-    studentNumberField?.classList.toggle('hidden', role !== 'student');
-    employeeNumberField?.classList.toggle('hidden', role !== 'teacher');
+    const isStudent = role === 'student';
+
+    tabStudent.classList.toggle('active', isStudent);
+    tabTeacher.classList.toggle('active', !isStudent);
+    tabStudent.setAttribute('aria-selected', String(isStudent));
+    tabTeacher.setAttribute('aria-selected', String(!isStudent));
+    document.getElementById('login-title').textContent = isStudent ? '学生登录' : '教师登录';
+    document.getElementById('reg-title').textContent = isStudent ? '注册学生账号' : '注册教师账号';
+
+    document.getElementById('reg-username').placeholder = isStudent ? '请输入学生姓名' : '请输入教师姓名';
+    if (loginIdentifierLabel) loginIdentifierLabel.textContent = isStudent ? '学号' : '教职工号';
+    document.getElementById('login-username').placeholder = isStudent ? '请输入学号' : '请输入教职工号';
+    studentNumberField?.classList.toggle('hidden', !isStudent);
+    employeeNumberField?.classList.toggle('hidden', isStudent);
     document.getElementById('reg-role').value = role;
 }
 
-function openAuthModal() { DOM.authModal.classList.add('show'); switchAuthForm('login'); }
+function openAuthModal() {
+    DOM.authModal.classList.add('show');
+    switchAuthForm('login');
+    setTimeout(() => document.getElementById('login-username')?.focus(), 120);
+}
 function closeAuthModal() { DOM.authModal.classList.remove('show'); }
 function switchAuthForm(form) {
     if (form === 'login') { DOM.authLoginForm.classList.remove('hidden'); DOM.authRegisterForm.classList.add('hidden'); }
     else { DOM.authLoginForm.classList.add('hidden'); DOM.authRegisterForm.classList.remove('hidden'); }
+}
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.innerHTML = `<i class="ph ${show ? 'ph-eye-slash' : 'ph-eye'}"></i>`;
+    btn.setAttribute('aria-label', show ? '隐藏密码' : '显示密码');
 }
 
 async function handleLogin() {

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>灵眸智教 | 计算机领域智能教学平台</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <!-- ==================== 依赖库 ==================== -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -20,7 +21,7 @@
 <body class="h-screen flex overflow-hidden">
 
 <!-- Toast容器 -->
-<div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+<div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 pointer-events-none"></div>
 
 <!-- ==================== 左侧侧边栏 ==================== -->
 <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col z-20 flex-shrink-0 transition-all duration-300">
@@ -382,69 +383,86 @@
 </div>
 </div>
 
-<!-- ==================== 登录/注册模态框 ==================== -->
-<div id="auth-modal" class="modal-overlay">
-<div class="modal-content bg-white rounded-xl w-[400px] max-w-[90vw] p-6 shadow-xl">
-<div class="flex gap-6 border-b border-gray-100 mb-5 pb-2">
-<button id="tab-student" class="text-[#2d8cf0] font-bold border-b-2 border-[#2d8cf0] pb-1 transition-all" onclick="switchAuthRole('student')">👨‍🎓 学生端</button>
-<button id="tab-teacher" class="text-gray-400 font-medium pb-1 transition-all hover:text-gray-600" onclick="switchAuthRole('teacher')">👨‍🏫 教师端</button>
-</div>
+<!-- ==================== 登录 / 注册页 ==================== -->
+<div id="auth-modal" class="modal-overlay auth-page">
+  <div class="auth-shell">
+    <aside class="auth-visual">
+      <p class="auth-eyebrow">XH-202620 · 计算机科学与技术</p>
+      <h1 class="auth-headline">让每一次提问，<br><span>都有据可查</span></h1>
+      <p class="auth-sub">面向《数据结构与算法》的助学 · 助教 · 助研一体化平台</p>
+      <img class="auth-art" src="./assets/login-scene.svg" alt="智能问答、知识库与引用核验示意">
+      <div class="auth-points">
+        <span>81 个知识块</span>
+        <span>12 个智能体</span>
+        <span>逐句引用</span>
+      </div>
+    </aside>
 
-<div id="auth-login-form">
-<div class="flex justify-between items-center mb-5">
-<h3 class="font-bold text-lg flex items-center gap-2" id="login-title"><i class="ph ph-sign-in text-[#2d8cf0]"></i> 学生登录</h3>
-<i class="ph ph-x cursor-pointer text-gray-400 hover:text-gray-600 text-lg transition-colors" onclick="closeAuthModal()"></i>
-</div>
-<div class="space-y-4">
-<div>
-<label id="login-identifier-label" class="block text-xs font-medium text-gray-500 mb-1">学号</label>
-<input type="text" id="login-username" class="auth-input" placeholder="请输入学号">
-</div>
-<div>
-<label class="block text-xs font-medium text-gray-500 mb-1">密码</label>
-<input type="password" id="login-password" class="auth-input" placeholder="请输入密码">
-</div>
-<button class="auth-btn" onclick="handleLogin()">登 录</button>
-<div class="text-center text-xs text-gray-500 mt-3">
-还没有账号？<span class="auth-link" onclick="switchAuthForm('register')">立即注册</span>
-</div>
-</div>
-</div>
+    <section class="auth-panel">
+      <button type="button" class="auth-skip" onclick="closeAuthModal()">先逛逛 <i class="ph ph-arrow-right"></i></button>
 
-<div id="auth-register-form" class="hidden">
-<div class="flex justify-between items-center mb-5">
-<h3 class="font-bold text-lg flex items-center gap-2" id="reg-title"><i class="ph ph-user-plus text-[#2d8cf0]"></i> 注册学生账号</h3>
-<i class="ph ph-x cursor-pointer text-gray-400 hover:text-gray-600 text-lg transition-colors" onclick="closeAuthModal()"></i>
-</div>
-<div class="space-y-4">
-<div id="reg-student-number-field">
-<label class="block text-xs font-medium text-gray-500 mb-1">学号</label>
-<input type="text" id="reg-student-number" class="auth-input" placeholder="请输入学号">
-</div>
-<div id="reg-employee-number-field" class="hidden">
-<label class="block text-xs font-medium text-gray-500 mb-1">教职工号</label>
-<input type="text" id="reg-employee-number" class="auth-input" placeholder="请输入教职工号">
-</div>
-<div>
-<label class="block text-xs font-medium text-gray-500 mb-1">姓名</label>
-<input type="text" id="reg-username" class="auth-input" placeholder="请输入姓名">
-</div>
-<div>
-<label class="block text-xs font-medium text-gray-500 mb-1">邮箱</label>
-<input type="email" id="reg-email" class="auth-input" placeholder="请输入常用邮箱">
-</div>
-<div>
-<label class="block text-xs font-medium text-gray-500 mb-1">密码</label>
-<input type="password" id="reg-password" class="auth-input" placeholder="请设置密码（至少6位）">
-</div>
-<input type="hidden" id="reg-role" value="student">
-<button class="auth-btn" onclick="handleRegister()">注 册</button>
-<div class="text-center text-xs text-gray-500 mt-3">
-已有账号？<span class="auth-link" onclick="switchAuthForm('login')">返回登录</span>
-</div>
-</div>
-</div>
-</div>
+      <div class="auth-card">
+        <div class="auth-logo-row">
+          <div class="auth-logo-mark"><i class="ph ph-graduation-cap"></i></div>
+          <div>
+            <div class="auth-logo-name">灵眸智教</div>
+            <div class="auth-logo-en">LINGMOU SMARTEDU</div>
+          </div>
+        </div>
+
+        <h2 class="auth-h2">登录</h2>
+        <p class="auth-hint">登录后同步学习记录、错题与学习画像</p>
+
+        <div class="auth-tabs" role="tablist">
+          <button type="button" id="tab-student" role="tab" aria-selected="true" aria-controls="auth-login-form" class="auth-tab active" onclick="switchAuthRole('student')">学生登录</button>
+          <button type="button" id="tab-teacher" role="tab" aria-selected="false" aria-controls="auth-login-form" class="auth-tab" onclick="switchAuthRole('teacher')">教师登录</button>
+        </div>
+
+        <div id="auth-login-form">
+          <h3 id="login-title" class="sr-only">学生登录</h3>
+          <form onsubmit="event.preventDefault(); handleLogin();">
+            <label id="login-identifier-label" class="auth-label" for="login-username">学号</label>
+            <input type="text" id="login-username" class="auth-input" placeholder="请输入学号" autocomplete="username">
+            <label class="auth-label" for="login-password">密码</label>
+            <div class="auth-password">
+              <input type="password" id="login-password" class="auth-input" placeholder="请输入密码" autocomplete="current-password">
+              <button type="button" class="auth-eye" onclick="togglePassword('login-password', this)" aria-label="显示密码"><i class="ph ph-eye"></i></button>
+            </div>
+            <button class="auth-btn" type="submit">登 录</button>
+          </form>
+          <p class="auth-switch">还没有账号？<span class="auth-link" onclick="switchAuthForm('register')">立即注册</span></p>
+          <div class="auth-or"><span>或</span></div>
+          <button type="button" class="auth-guest" onclick="closeAuthModal()">以游客身份进入</button>
+        </div>
+
+        <div id="auth-register-form" class="hidden">
+          <h3 id="reg-title" class="auth-form-title">注册学生账号</h3>
+          <form onsubmit="event.preventDefault(); handleRegister();">
+            <div id="reg-student-number-field">
+              <label class="auth-label" for="reg-student-number">学号</label>
+              <input type="text" id="reg-student-number" class="auth-input" placeholder="请输入学号">
+            </div>
+            <div id="reg-employee-number-field" class="hidden">
+              <label class="auth-label" for="reg-employee-number">教职工号</label>
+              <input type="text" id="reg-employee-number" class="auth-input" placeholder="请输入教职工号">
+            </div>
+            <label class="auth-label" for="reg-username">姓名</label>
+            <input type="text" id="reg-username" class="auth-input" placeholder="请输入学生姓名">
+            <label class="auth-label" for="reg-email">邮箱</label>
+            <input type="email" id="reg-email" class="auth-input" placeholder="请输入常用邮箱">
+            <label class="auth-label" for="reg-password">密码</label>
+            <div class="auth-password">
+              <input type="password" id="reg-password" class="auth-input" placeholder="请设置密码（至少 6 位）" autocomplete="new-password">
+              <button type="button" class="auth-eye" onclick="togglePassword('reg-password', this)" aria-label="显示密码"><i class="ph ph-eye"></i></button>
+            </div>
+            <input type="hidden" id="reg-role" value="student">
+            <button class="auth-btn" type="submit">注 册</button>
+          </form>
+          <p class="auth-switch">已有账号？<span class="auth-link" onclick="switchAuthForm('login')">返回登录</span></p>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>
 
 <!-- ==================== 设置模态框 ==================== -->

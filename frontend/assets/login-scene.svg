@@ -1,0 +1,82 @@
+<svg width="640" height="440" viewBox="0 0 640 440" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="智能问答与知识库引用示意">
+  <defs>
+    <linearGradient id="blob" x1="90" y1="60" x2="560" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F2F8FF"/>
+      <stop offset="1" stop-color="#DFECFA"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#2B5F8E"/>
+      <stop offset="1" stop-color="#1F4E79"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#1F4E79" flood-opacity="0.12"/>
+    </filter>
+    <filter id="tiny" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1F4E79" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      text { font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif; }
+    </style>
+  </defs>
+
+  <ellipse cx="322" cy="232" rx="286" ry="196" fill="url(#blob)"/>
+
+  <g stroke="#A9C8E6" stroke-width="1.2" stroke-dasharray="4 7" opacity="0.8">
+    <path d="M92 96 L170 140"/>
+    <path d="M548 112 L492 150"/>
+    <path d="M74 292 L150 330"/>
+    <path d="M566 316 L510 350"/>
+  </g>
+  <g fill="#FFFFFF" stroke="#A9C8E6" stroke-width="1.2">
+    <circle cx="92" cy="96" r="5"/>
+    <circle cx="548" cy="112" r="5"/>
+    <circle cx="74" cy="292" r="5"/>
+    <circle cx="566" cy="316" r="5"/>
+  </g>
+
+  <g filter="url(#tiny)">
+    <rect x="36" y="118" width="136" height="42" rx="21" fill="url(#chip)"/>
+    <text x="104" y="145" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="600">12 个智能体</text>
+  </g>
+  <g filter="url(#tiny)">
+    <rect x="466" y="160" width="140" height="42" rx="21" fill="#FFFFFF" stroke="#D6E5F4"/>
+    <text x="536" y="187" text-anchor="middle" fill="#1F4E79" font-size="13" font-weight="600">引用可追溯</text>
+  </g>
+
+  <g>
+    <path d="M150 368 C 210 346, 280 346, 330 364 L330 414 C 280 396, 210 396, 150 418 Z" fill="#FFFFFF" stroke="#C9DDF2" stroke-width="1.5"/>
+    <path d="M510 368 C 450 346, 380 346, 330 364 L330 414 C 380 396, 450 396, 510 418 Z" fill="#FDFEFF" stroke="#C9DDF2" stroke-width="1.5"/>
+    <path d="M330 364 L330 414" stroke="#B7D2EC" stroke-width="1.5"/>
+    <path d="M178 384 C 230 370, 280 372, 314 384" stroke="#E3EEF9" stroke-width="3" stroke-linecap="round"/>
+    <path d="M178 394 C 230 380, 280 382, 314 394" stroke="#EDF4FB" stroke-width="3" stroke-linecap="round"/>
+    <path d="M346 384 C 390 372, 440 370, 486 384" stroke="#E3EEF9" stroke-width="3" stroke-linecap="round"/>
+    <path d="M346 394 C 390 382, 440 380, 486 394" stroke="#EDF4FB" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#soft)">
+    <rect x="158" y="64" width="336" height="256" rx="16" fill="#FFFFFF" stroke="#DCE8F4"/>
+    <path d="M158 100 H494" stroke="#EEF4FA"/>
+    <circle cx="180" cy="82" r="4" fill="#F3B7B2"/>
+    <circle cx="194" cy="82" r="4" fill="#F6D58E"/>
+    <circle cx="208" cy="82" r="4" fill="#A9D7C3"/>
+    <rect x="248" y="74" width="156" height="16" rx="8" fill="#F3F7FC"/>
+    <text x="326" y="86" text-anchor="middle" fill="#8CA3BA" font-size="9.5">灵眸智教 · 智能问答</text>
+  </g>
+
+  <rect x="180" y="116" width="214" height="52" rx="12" fill="#EAF4FF"/>
+  <text x="196" y="138" fill="#1F4E79" font-size="12.5">快速排序最坏为什么</text>
+  <text x="196" y="156" fill="#1F4E79" font-size="12.5">是 O(n²)？</text>
+
+  <rect x="232" y="186" width="238" height="82" rx="12" fill="#F8FAFD" stroke="#E7EFF8"/>
+  <text x="248" y="208" fill="#33475B" font-size="12">基准划分极端不平衡，</text>
+  <text x="248" y="226" fill="#33475B" font-size="12">每次只减少一个元素。</text>
+  <rect x="248" y="238" width="104" height="19" rx="9.5" fill="#E8F1FA"/>
+  <text x="256" y="251" fill="#2E74B5" font-size="9.5">[1] 教材 §8.3</text>
+  <rect x="360" y="238" width="92" height="19" rx="9.5" fill="#E8F1FA"/>
+  <text x="368" y="251" fill="#2E74B5" font-size="9.5">[2] 课件 P42</text>
+
+  <g opacity="0.95">
+    <path d="M232 294 H466" stroke="#EEF4FA"/>
+    <text x="248" y="308" fill="#9AAFc3" font-size="9.5">回答带引用 · 可展开原文核对</text>
+  </g>
+</svg>
