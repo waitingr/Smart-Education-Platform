@@ -7,7 +7,8 @@ let speechFinalText = '';
  */
 
 const API_CONFIG = {
-    BASE_URL: 'http://localhost:5000/api/v1',
+    // 同源部署（由 Flask 托管前端）时自动使用当前地址；直接用 file:// 打开时回退到本地 5000 端口
+    BASE_URL: (location.protocol === 'file:' ? 'http://localhost:5000' : (location.origin || 'http://localhost:5000')) + '/api/v1',
     TIMEOUT: 360000,
     ENDPOINTS: {
         CHAT: '/chat', CHAT_STOP: '/chat/stop', CODE_EVALUATE: '/code/evaluate', DIAGNOSIS: '/diagnosis',
@@ -313,6 +314,8 @@ function openSettings() {
     document.getElementById('settings-modal')?.classList.add('show');
     document.getElementById('settings-username').value = AppState.currentUser.name;
     document.getElementById('settings-email').value = AppState.currentUser.email || '';
+    // 模型信息一律从后端实时读取，不在 HTML 里写死，避免界面与实际模型不一致
+    if (typeof refreshModelPanel === 'function') refreshModelPanel();
 }
 
 function closeSettings() { document.getElementById('settings-modal')?.classList.remove('show'); }
@@ -811,6 +814,7 @@ function switchPage(target) {
     if (target === 'video') loadVideos();
     if (target === 'material') loadMaterials();
     if (target === 'homework') loadHomeworks();
+    if (target === 'course' && typeof loadCoursePage === 'function') loadCoursePage();
 }
 
 function requireLogin() {

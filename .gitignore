@@ -1,6 +1,10 @@
-# ========== 模型权重（十几 GB，绝不上传）==========
-models/llm/*/snapshots/
-models/llm/*/.cache/
+﻿# ============================================================================
+# 灵眸智教 · 版本库忽略清单
+# 原则：源码与文档进库；权重、数据库、用户上传、生成产物不进库
+# ============================================================================
+
+# ---------- 模型权重（可直接用 Ollama，权重不进库） ----------
+models/llm/
 models/**/*.safetensors
 models/**/*.bin
 models/**/*.pt
@@ -9,22 +13,20 @@ models/**/*.gguf
 models/**/*.onnx
 models/**/*.h5
 models/**/*.ckpt
+!models/.gitkeep
+!models/README.md
 
-# 只保留模型目录结构
-!models/**/.gitkeep
-
-# ========== 密钥与本地配置 ==========
+# ---------- 密钥与本地配置 ----------
 .env
 *.env
 !.env.example
 backend/.env
 
-# ========== Python 缓存 ==========
+# ---------- Python 缓存与构建 ----------
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
 build/
 dist/
 *.egg-info/
@@ -40,7 +42,7 @@ ENV/
 .coverage
 htmlcov/
 
-# ========== 运行时数据（用户上传/自动生成）==========
+# ---------- 运行时数据（用户上传 / 自动生成） ----------
 data/video/
 data/attachments/
 data/vector_db/
@@ -49,8 +51,16 @@ data/vector_db/
 *.db
 *.pkl
 *.npy
+!data/video/.gitkeep
+!data/attachments/.gitkeep
+!data/vector_db/.gitkeep
 
-# ========== 编辑器 / 系统 ==========
+# ---------- 微调产物 ----------
+training/output/
+training/data/train.jsonl
+training/data/val.jsonl
+
+# ---------- 编辑器 / 系统 ----------
 .idea/
 .vscode/
 *.swp
@@ -58,11 +68,24 @@ data/vector_db/
 Thumbs.db
 desktop.ini
 
-# ========== 不公开的商业计划书 ==========
+# ---------- 不公开的商业计划书与压缩包 ----------
 data/materials/第四版.docx
-
-# ========== 其他 ==========
 *.zip
 *.rar
 *.7z
 !data/materials/**/*.zip
+
+# C++ 检索内核编译产物（源码在 native/，用 scripts/build_kbcore.ps1 生成）
+backend/native/*.dll
+backend/native/*.so
+backend/native/*.dylib
+backend/native/*.pdb
+
+# 本地推理运行时与模型权重（约 12.9 GB，随项目分发但不入库）
+models/ollama/runtime/
+models/ollama/store/
+models/ollama/serve.log
+models/llm/*
+!models/llm/.gitkeep
+
+data/logs/

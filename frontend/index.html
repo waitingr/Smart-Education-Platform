@@ -48,6 +48,25 @@
 <i class="ph ph-chats-circle"></i><span>AI 智能助教</span>
 <span class="badge">在线</span>
 </div>
+
+<div class="px-5 py-2 mt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">助学 · 学习支持</div>
+<div class="sidebar-item" data-page="workspace-learn">
+<i class="ph ph-student"></i><span>学习工作台</span>
+</div>
+<div class="sidebar-item" data-page="profile">
+<i class="ph ph-user-focus"></i><span>学习画像</span>
+</div>
+
+<div class="px-5 py-2 mt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">助教 · 教学支持</div>
+<div class="sidebar-item teacher-only hidden" data-page="workspace-teach">
+<i class="ph ph-chalkboard-teacher"></i><span>教学助手</span>
+</div>
+
+<div class="px-5 py-2 mt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">助研 · 科研支持</div>
+<div class="sidebar-item" data-page="workspace-research">
+<i class="ph ph-flask"></i><span>科研助手</span>
+</div>
+
 <div class="px-5 py-2 mt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">教学资源</div>
 <div class="sidebar-item" data-page="video">
 <i class="ph ph-video-camera"></i><span>章节视频</span>
@@ -58,9 +77,21 @@
 <div class="sidebar-item" data-page="homework">
 <i class="ph ph-exam"></i><span>在线作业</span>
 </div>
+<div class="sidebar-item" data-page="course">
+<i class="ph ph-books"></i><span>课程空间</span>
+</div>
 <div class="sidebar-item teacher-only hidden" data-page="student-info">
 <i class="ph ph-identification-card"></i><span>学生信息</span>
 </div>
+
+<div class="px-5 py-2 mt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">平台</div>
+<div class="sidebar-item" data-page="kb">
+<i class="ph ph-database"></i><span>知识库管理</span>
+</div>
+<div class="sidebar-item" data-page="analytics">
+<i class="ph ph-chart-polar"></i><span>使用与评测看板</span>
+</div>
+
 <div class="px-5 py-2 mt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">历史记录</div>
 <div class="px-5 space-y-1" id="history-list">
 <div class="text-xs text-gray-400 py-1.5 px-1" id="history-empty">暂无历史记录</div>
@@ -101,31 +132,44 @@
 <i class="ph ph-database mr-1"></i>RAG知识库已挂载
 </span>
 </div>
+<button id="new-chat-btn" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-gray-500 hover:text-[#2d8cf0] hover:bg-[#f0f7ff] transition-colors" title="开始新对话">
+<i class="ph ph-plus-circle text-sm"></i><span class="hidden sm:inline">新对话</span>
+</button>
 <button id="theme-toggle-btn" class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#2d8cf0] hover:bg-[#f0f7ff] transition-colors" title="切换暗色模式" aria-label="切换暗色模式">
 <i class="ph ph-moon text-lg"></i>
 </button>
 </header>
 
 <div id="chat-stream" class="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 space-y-5 pb-60 scroll-smooth">
-<div class="max-w-3xl mx-auto msg-enter">
+<div class="max-w-3xl mx-auto msg-enter" id="chat-welcome">
 <div class="bg-white border border-gray-200 rounded-xl p-5 md:p-6 shadow-sm">
 <div class="flex items-start">
 <div class="w-10 h-10 rounded-full bg-[#ebf4ff] flex items-center justify-center text-[#2d8cf0] mr-4 flex-shrink-0"><i class="ph ph-robot text-xl"></i></div>
 <div class="min-w-0 flex-1">
-<h3 class="font-bold text-gray-900 mb-2 text-base">您好，我是灵眸智教 AI 助教 👋</h3>
-<p class="text-gray-600 text-sm mb-4 leading-relaxed">基于<strong>千问2.5-7B大模型</strong>构建，结合<strong>RAG学科知识库</strong>与<strong>工作流编排</strong>技术，支持代码评测、知识精准问答与学情智能诊断。</p>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group">
-<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-code-block mr-1"></i>代码自动评测</div>
-<div class="text-gray-500 leading-relaxed">分析复杂度、风格检查与优化建议</div>
+<h3 class="font-bold text-gray-900 mb-2 text-base">灵眸智教 · 计算机学科垂类大模型</h3>
+<p class="text-gray-600 text-sm mb-3 leading-relaxed">围绕《数据结构与算法》课程，提供<strong>助教、助学、助研</strong>三类场景的智能体工作流。每条回答都标注知识库出处，可逐条核查。</p>
+<div class="flex flex-wrap gap-2 mb-4 text-[11px]" id="welcome-badges">
+<span class="px-2 py-1 rounded-full bg-[#f0f7ff] text-[#2d8cf0]"><i class="ph ph-database mr-1"></i>学科知识库</span>
+<span class="px-2 py-1 rounded-full bg-[#f0f7ff] text-[#2d8cf0]"><i class="ph ph-quotes mr-1"></i>引用可追溯</span>
+<span class="px-2 py-1 rounded-full bg-[#f0f7ff] text-[#2d8cf0]"><i class="ph ph-tree-structure mr-1"></i>工作流编排</span>
+<span class="px-2 py-1 rounded-full bg-[#f0f7ff] text-[#2d8cf0]"><i class="ph ph-user-focus mr-1"></i>个性化适配</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="welcome-samples">
+<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group" onclick="quickAsk('为什么快速排序最坏情况是 O(n²)？')">
+<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-code-block mr-1"></i>核心概念精讲</div>
+<div class="text-gray-500 leading-relaxed">举例：快排最坏复杂度与退化条件</div>
 </button>
-<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group">
-<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-translate mr-1"></i>核心概念精讲</div>
-<div class="text-gray-500 leading-relaxed">RAG知识库精准检索与答疑</div>
+<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group" onclick="quickAsk('Dijkstra 算法能处理带负权边的图吗？为什么？')">
+<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-translate mr-1"></i>概念辨析</div>
+<div class="text-gray-500 leading-relaxed">举例：负权边与最短路算法选择</div>
 </button>
-<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group">
-<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-chart-bar mr-1"></i>学情智能诊断</div>
-<div class="text-gray-500 leading-relaxed">多维度学情分析与预警</div>
+<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group" onclick="quickAsk('哈希表解决冲突的常用方法有哪些？各自有什么优缺点？')">
+<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-list-checks mr-1"></i>对比归纳</div>
+<div class="text-gray-500 leading-relaxed">举例：开放定址与链地址法对比</div>
+</button>
+<button class="text-left p-3 border border-gray-200 rounded-lg hover:border-[#2d8cf0] hover:bg-[#f0f7ff] transition-all text-xs group" onclick="switchPage('workspace-learn')">
+<div class="font-semibold text-gray-800 mb-1 group-hover:text-[#2d8cf0]"><i class="ph ph-path mr-1"></i>更多场景</div>
+<div class="text-gray-500 leading-relaxed">学习路径、错题归因、自测练习</div>
 </button>
 </div>
 </div>
@@ -136,6 +180,12 @@
 
 <div id="chat-composer" class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#f5f7fa] via-[#f5f7fa] to-transparent pt-8 pb-4 md:pb-6 px-4 md:px-6">
 <div class="max-w-3xl mx-auto">
+<div class="flex items-center gap-1 mb-2 text-[11px]" id="chat-mode-bar">
+<span class="text-gray-400 mr-1">模式</span>
+<button id="mode-qa" onclick="pickChatMode('qa')" class="px-2.5 py-1 rounded-md bg-white text-[#2d8cf0] shadow-sm font-medium border border-gray-100 transition-all"><i class="ph ph-book-open-text mr-0.5"></i>知识答疑</button>
+<button id="mode-code" onclick="pickChatMode('code')" class="px-2.5 py-1 rounded-md text-gray-500 hover:text-[#2d8cf0] font-medium transition-all"><i class="ph ph-code mr-0.5"></i>代码评测</button>
+<button id="mode-diagnosis" onclick="pickChatMode('diagnosis')" class="px-2.5 py-1 rounded-md text-gray-500 hover:text-[#2d8cf0] font-medium transition-all"><i class="ph ph-chart-line-up mr-0.5"></i>学情诊断</button>
+</div>
 <div id="chat-input-panel" class="bg-white border border-gray-200 rounded-xl shadow-sm p-1 focus-within:border-[#2d8cf0] focus-within:shadow-[0_0_0_3px_rgba(45,140,240,0.08)] transition-all">
 <textarea id="user-input" rows="1" maxlength="2000" class="w-full bg-transparent border-none focus:ring-0 resize-none px-4 py-3 text-sm outline-none" placeholder="输入问题或粘贴代码... (Enter发送 / Shift+Enter换行)" style="max-height:150px; min-height:44px;"></textarea>
 <div class="flex justify-between items-center px-3 py-2 border-t border-gray-100">
@@ -163,7 +213,21 @@
 </div>
 </div>
 
-<!-- 页面2: 章节视频 -->
+<!-- 页面2: 智能体工作台（助学 / 助教 / 助研 三个入口共用同一渲染器） -->
+<div id="page-workspace-learn" class="page-content hidden h-full overflow-y-auto p-4 md:p-6"><div id="ws-learn" class="max-w-6xl mx-auto w-full"></div></div>
+<div id="page-workspace-teach" class="page-content hidden h-full overflow-y-auto p-4 md:p-6"><div id="ws-teach" class="max-w-6xl mx-auto w-full"></div></div>
+<div id="page-workspace-research" class="page-content hidden h-full overflow-y-auto p-4 md:p-6"><div id="ws-research" class="max-w-6xl mx-auto w-full"></div></div>
+
+<!-- 页面: 学习画像 -->
+<div id="page-profile" class="page-content hidden h-full overflow-y-auto p-4 md:p-6"><div id="profile-root" class="max-w-4xl mx-auto w-full"></div></div>
+
+<!-- 页面: 知识库管理 -->
+<div id="page-kb" class="page-content hidden h-full overflow-y-auto p-4 md:p-6"><div id="kb-root" class="max-w-6xl mx-auto w-full"></div></div>
+
+<!-- 页面: 使用与评测看板 -->
+<div id="page-analytics" class="page-content hidden h-full overflow-y-auto p-4 md:p-6"><div id="analytics-root" class="max-w-6xl mx-auto w-full"></div></div>
+
+<!-- 页面3: 章节视频 -->
 <div id="page-video" class="page-content hidden h-full p-6 md:p-8 overflow-y-auto">
 <div class="max-w-5xl mx-auto w-full">
 <div class="flex items-center justify-between mb-8">
@@ -256,6 +320,24 @@
 </div>
 </div>
 </div>
+<!-- 页面6: 课程空间（仿学习通：任务点 / 测验 / 讨论 / 签到 / 通知 / 学情） -->
+<div id="page-course" class="page-content hidden h-full p-4 md:p-6 overflow-y-auto">
+<div class="max-w-6xl mx-auto w-full">
+<div class="flex flex-wrap items-center gap-3 mb-5">
+<div class="w-10 h-10 rounded-xl bg-[#2d8cf0] flex items-center justify-center text-white shadow-md"><i class="ph ph-books text-xl"></i></div>
+<div class="mr-auto">
+<h2 class="text-xl font-bold text-gray-900">课程空间</h2>
+<p class="text-xs text-gray-400 mt-0.5">任务点 · 随堂测验 · 讨论区 · 签到 · 通知，全部由本机大模型参与</p>
+</div>
+<div class="flex items-center gap-2">
+<button onclick="lmsOpenJoin()" class="px-3 py-2 text-xs font-medium border border-gray-200 rounded-lg hover:bg-gray-50"><i class="ph ph-sign-in mr-1"></i>加入课程</button>
+<button onclick="lmsOpenCreateCourse()" class="teacher-only hidden px-3 py-2 text-xs font-medium bg-[#2d8cf0] text-white rounded-lg hover:bg-[#2080e0]"><i class="ph ph-plus mr-1"></i>新建课程</button>
+</div>
+</div>
+<div id="lms-root" class="space-y-4"></div>
+</div>
+</div>
+
 </main>
 
 <div id="homework-modal" class="modal-overlay" onclick="if(event.target===this)closeHomeworkForm()">
@@ -383,7 +465,13 @@
 <button onclick="updateProfile()" class="w-full py-2 bg-[#2d8cf0] text-white rounded-lg text-sm font-medium hover:bg-[#2080e0] transition-colors">保存账号信息</button>
 </div>
 <div class="flex justify-between items-center py-2.5 border-b border-gray-100">
-<span class="text-gray-500">模型版本</span><span class="font-medium">千问 2.5-7B</span>
+<span class="text-gray-500">生成模型</span><span class="font-medium text-xs" id="model-version-display">读取中…</span>
+</div>
+<div class="flex justify-between items-center py-2.5 border-b border-gray-100">
+<span class="text-gray-500">图片理解</span><span class="font-medium text-xs" id="vision-capability-display">读取中…</span>
+</div>
+<div class="flex justify-between items-center py-2.5 border-b border-gray-100">
+<span class="text-gray-500">推理位置</span><span class="font-medium text-xs">本机 · 不出网</span>
 </div>
 <div class="flex justify-between items-center py-2.5 border-b border-gray-100">
 <span class="text-gray-500">API 端点</span><span class="font-medium text-xs font-mono text-gray-600" id="api-endpoint-display">/api/v1</span>
@@ -399,5 +487,7 @@
 
 <!-- 引入外部逻辑脚本 -->
 <script src="./js/main.js"></script>
+<script src="./js/agents.js"></script>
+<script src="./js/lms.js"></script>
 </body>
 </html>
