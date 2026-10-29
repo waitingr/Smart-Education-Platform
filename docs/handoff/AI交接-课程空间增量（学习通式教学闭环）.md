@@ -317,3 +317,28 @@ models/
 | --- | --- | --- |
 | `models/ollama/store/gguf/` | 5.38 GB | 当初 `ollama create` 的导入源（8B + mmproj），模型本体已在 `blobs/`，删掉仍能跑 |
 | `models/ollama/runtime/lib/ollama/cuda_v13/` | 约 1 GB | 本机驱动 12.7 用不到 v13，只用 cuda_v12；换到新驱动机器再补 |
+
+### 12.7 迁移过程中差点丢掉 C++ 源码（已恢复，并已入库）
+
+搬 `native/kbcore.cpp` 到 `backend/native/` 时，`git mv` 因文件**未被跟踪**而失败，
+紧接着的 `Remove-Item native -Recurse` 把源码删掉了（不在回收站、也不在 git 历史里）。
+处理与结论：
+
+| 步骤 | 结果 |
+| --- | --- |
+| 按 ABI 与语义重写 `kbcore.cpp` | 依据 `backend/kb_native.py` 的 ctypes 签名 + `kb_service._score_python` 的公式逐项对齐 |
+| 正确性验证 | `scripts/verify_kb_equiv.py`：30 条查询 top-10 的 `chunk_id / score / coverage` **逐位一致** |
+| 性能验证 | `scripts/bench_kb.py --engine cpp`：81 块 0.1 ms / 4,860 块 0.7 ms / 48,600 块 6.1 ms |
+| 防复发 | `backend/native/kbcore.cpp` 已 `git add` 并提交（`63b4d04`），产物 `*.dll` 仍忽略 |
+
+教训：**先 `git mv` 之前确认文件已跟踪，或先 copy 再删**。运行 `verify_kb_equiv.py` 是重写后的唯一可信验收标准。
+
+### 12.8 实测补充：HTTP 层的真实开销
+
+| 场景 | p50 |
+| --- | --- |
+| 内核打分（81 块，进程内） | 0.1 ms |
+| `/api/v1/kb/search` 端到端（81 块） | **1.9 ms** |
+| 同上，但后端 stdout 直连管道且每请求写访问日志 | 10–15 ms（**测量假象**：日志写入阻塞在管道上，不是检索慢） |
+
+> 演示/压测时把后端日志重定向到文件（`data/logs/server.out`）再测，否则访问日志会污染延迟数字。
